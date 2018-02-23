@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_work_workflow_workitem,access_work_workflow_workitem,model_work_workflow_workitem,,1,1,1,1
+access_work_workflow_transition,access_work_workflow_transition,model_work_workflow_transition,,1,1,1,1
+access_work_workflow_action,access_work_workflow_action,model_work_workflow_action,,1,1,1,1
+access_work_workflow,access_work_workflow,model_work_workflow,,1,1,1,1
+access_work_workflow_instance,access_work_workflow_instance,model_work_workflow_instance,,1,1,1,1

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Workflow Workitems -->
+    <record id="work_workflow_workitem_tree" model="ir.ui.view">
+        <field name="name">work.workflow.workitem.tree</field>
+        <field name="model">work.workflow.workitem</field>
+        <field name="arch" type="xml">
+            <tree string="Workitem" create="false" delete="true">
+                <field name="name"/>
+                <field name="state"/>
+                <field name="create_date"/>
+                <field name="scheduled_run"/>
+                <field name="action_id"/>
+                <field name="workflow_id"/>
+                <field name="error_msg"/>
+            </tree>
+        </field>
+    </record>
+    <record id="work_workflow_workitem_search" model="ir.ui.view">
+        <field name="name">work.workflow.workitem.filter</field>
+        <field name="model">work.workflow.workitem</field>
+        <field name="arch" type="xml">
+            <search string="Workitem">
+                <field name="name"/>
+                <field name="state"/>
+                <field name="action_id"/>
+                <field name="workflow_id"/>
+                <field name="create_date"/>
+                <group expand="0" string="Group By">
+                    <filter string="By State" context="{'group_by': 'state'}"/>
+                    <filter string="By Workflow" context="{'group_by': 'workflow_id'}"/>
+                    <filter string="By Actions" context="{'group_by': 'action_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="work_workflow_workitem_form" model="ir.ui.view">
+        <field name="name">work.workflow.workitem.form</field>
+        <field name="model">work.workflow.workitem</field>
+        <field name="arch" type="xml">
+            <form string="Workitem" create="true" delete="true">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="todo,running,cancelled,exception,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="state"/>
+                        <field name="create_date"/>
+                        <field name="scheduled_run"/>
+                        <field name="action_id"/>
+                        <field name="workflow_id"/>
+                    </group>
+                    <group>
+                        <field name="job_metadata"/>
+                    </group>
+                    <group>
+                        <field name="run"/>
+                        <field name="triggered"/>
+                        <field name="error_msg"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- Workflow Instance -->
+    <record id="work_workflow_instance_tree" model="ir.ui.view">
+        <field name="name">work.workflow.instance.tree</field>
+        <field name="model">work.workflow.instance</field>
+        <field name="arch" type="xml">
+            <tree string="Workflow Instance">
+                <field name="name"/>
+                <field name="workflow_id" options="{'no_open':True,'no_create':True}"/>
+                <field name="create_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="work_workflow_instance_search" model="ir.ui.view">
+        <field name="name">work.workflow.instance.tree</field>
+        <field name="model">work.workflow.instance</field>
+        <field name="arch" type="xml">
+            <search string="Workflow Instance">
+                <field name="name"/>
+                <field name="create_date"/>
+                <field name="workflow_id"/>
+            </search>
+        </field>
+    </record>
+    <record id="work_workflow_instance_form" model="ir.ui.view">
+        <field name="name">work.workflow.instance.tree</field>
+        <field name="model">work.workflow.instance</field>
+        <field name="arch" type="xml">
+            <form string="Workflow Instance">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object"
+                            name="get_workitems"
+                            class="oe_stat_button"
+                            icon="fa-th">
+                            <label string="Work-items"/>
+                        </button>
+                    </div>
+                    <group>
+                        <field name="name"/>
+                        <field name="workflow_id" options="{'no_open':True,'no_create':True}"/>
+                        <field name="create_date"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

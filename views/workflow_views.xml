@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Workflow Object -->
+    <record model="ir.ui.view" id="view_work_workflow_form">
+        <field name="name">work.workflow.form</field>
+        <field name="model">work.workflow</field>
+        <field name="arch" type="xml">
+            <form string="Workflow">
+            <header>
+                <button name="state_sent_set" type="object" string="Publish" states="draft" class="oe_highlight"/>
+                <button name="state_draft_set" type="object" string="Set to Draft" states="sent,old"/>
+                <button name="state_old_set" type="object" string="Deprecate" states="sent,old"/>
+                <field name="state" widget="statusbar"/>
+            </header>
+            <sheet string="Workflow">
+                <div class="oe_button_box" name="button_box">
+                    <button type="object"
+                        name="get_instances"
+                        class="oe_stat_button"
+                        icon="fa-th-large">
+                        <label string="Instances"/>
+                    </button>
+                    <button type="object"
+                        name="get_workitems"
+                        class="oe_stat_button"
+                        icon="fa-th">
+                        <label string="Work items"/>
+                    </button>
+                </div>
+                <div class="oe_title">
+                    <label for="name" class="oe_edit_only"/>
+                    <h1><field name="name" placeholder="Workflow Name"/></h1>
+                </div>
+                <separator string="Activities"/>
+                <field name="action_ids" context="{'default_workflow_id': active_id}"/>
+                <separator string="Start Metadata"/>
+                <field name="start_metadata" context="{'default_workflow_id': active_id}"/>
+
+            </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_work_workflow_tree">
+        <field name="name">work.workflow.tree</field>
+        <field name="model">work.workflow</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="state == 'draft'" decoration-muted="state in ('done','cancelled')" string="Workflow">
+                <field name="name"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_work_workflow_diagram" model="ir.ui.view">
+        <field name="name">work.workflow.diagram</field>
+        <field name="model">work.workflow</field>
+        <field name="arch" type="xml">
+            <diagram string="Workflow Editor">
+                <node object="work.workflow.action" shape="rectangle:job_type=='work.workflow.job.router'" bgcolor="blue:start==True;gray:job_type=='work.workflow.job.draft'">
+                    <field name="name"/>
+                    <field name="job_type"/>
+                    <field name="start" invisible="1"/>
+                </node>
+                <arrow object="work.workflow.transition" source="action_from_id" destination="action_to_id" label="['name']">
+                    <field name="action_from_id"/>
+                    <field name="action_to_id"/>
+                    <field name="interval_nbr"/>
+                    <field name="interval_type"/>
+                </arrow>
+            </diagram>
+        </field>
+    </record>
+    <record id="view_work_workflow_search" model="ir.ui.view">
+        <field name="name">work.workflow.search</field>
+        <field name="model">work.workflow</field>
+        <field name="arch" type="xml">
+            <search string="Workflow">
+                <field name="name" string="Workflow"/>
+                <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Running" domain="[('state','=','running')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="Status" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_work_workflow_form">
+        <field name="name">Workflow Engine</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">work.workflow</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,diagram</field>
+        <field name="view_id" ref="view_work_workflow_tree"/>
+        <field name="context">{'group_by': []}</field>
+        <field name="search_view_id" ref="view_work_workflow_search"/>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            Click to create new workflow definitions.
+          </p>
+        </field>
+    </record>
+    <menuitem name="Workflow Engine" id="action_work_workflow_menu"
+              parent="base.menu_automation"
+              action="action_work_workflow_form"/>
+    <!-- Workflow Action -->
+    <record model="ir.ui.view" id="view_work_workflow_action_form">
+        <field name="name">work.workflow.action.form</field>
+        <field name="model">work.workflow.action</field>
+        <field name="arch" type="xml">
+            <form string="Actions">
+                <group>
+                    <group>
+                        <field name="name"/>
+                        <field name="start"/>
+                        <field name="workflow_id" invisible="1" required="0"/>
+                        <field name="job_type"/>
+                    </group>
+                    <group>
+                        <field name="properties"/>
+                    </group>
+                </group>
+                <group invisible="1">
+                    <separator string="Previous Activities"/>
+                    <field name="from_ids" mode="tree" context="{'default_action_to_id': active_id}">
+                        <tree string="Incoming Transitions" editable="bottom">
+                            <field name="action_from_id" domain="[('workflow_id', '=', parent.workflow_id)]" options="{'no_create': True}" />
+                            <field name='trigger'/>
+                            <field name="interval_nbr"/>
+                            <field name="interval_type"/>
+                        </tree>
+                        <form string="Incoming Transitions">
+                            <group col="4">
+                                <field name="action_from_id" domain="[('workflow_id', '=', parent.workflow_id)]" options="{'no_create': True}" />
+                                <field name='trigger'/>
+                                <field name="interval_nbr"/>
+                                <field name="interval_type"/>
+                            </group>
+                        </form>
+                    </field>
+                    <separator string="Next Activities"/>
+                    <field name="to_ids" mode="tree" context="{'default_action_from_id': active_id}">
+                        <tree string="Outgoing Transitions" editable="bottom">
+                            <field name="action_to_id" domain="[('workflow_id', '=', parent.workflow_id)]" options="{'no_create': True}" />
+                            <field name='trigger'/>
+                            <field name="interval_nbr"/>
+                            <field name="interval_type"/>
+                        </tree>
+                        <form string="Outgoing Transitions">
+                            <group col="4">
+                                <field name="action_to_id" domain="[('workflow_id', '=', parent.workflow_id)]" options="{'no_create': True}" />
+                                <field name='trigger'/>
+                                <field name="interval_nbr"/>
+                                <field name="interval_type"/>
+                            </group>
+                        </form>
+                    </field>
+                </group>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_work_workflow_action_tree">
+        <field name="name">work.workflow.action.tree</field>
+        <field name="model">work.workflow.action</field>
+        <field name="arch" type="xml">
+            <tree string="Action">
+                <field name="name"/>
+                <field name="job_type"/>
+                <field name="start"/>
+            </tree>
+        </field>
+    </record>
+    <!-- Workflow Transition -->
+    <record id="work_workflow_transition_tree" model="ir.ui.view">
+        <field name="name">work.workflow.transition.tree</field>
+        <field name="model">work.workflow.transition</field>
+        <field name="arch" type="xml">
+            <tree string="Workflow Transition">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="work_workflow_transition_search" model="ir.ui.view">
+        <field name="name">work.workflow.transition.search</field>
+        <field name="model">work.workflow.transition</field>
+        <field name="arch" type="xml">
+            <search string="Workflow Transition">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="work_workflow_transition_form" model="ir.ui.view">
+        <field name="name">work.workflow.transition.form</field>
+        <field name="model">work.workflow.transition</field>
+        <field name="arch" type="xml">
+            <form string="Workflow Transition">
+                <group>
+                    <field name="trigger"/>
+                    <field name="condition_name" attrs="{'invisible':[('trigger','=','auto')]}"/>
+                    <field name="condition" attrs="{'invisible':[('trigger','=','auto')]}"/>
+                    <field name="interval_nbr" attrs="{'invisible':[('trigger','=','auto')]}"/>
+                    <field name="interval_type" attrs="{'invisible':[('trigger','=','auto')]}"/>
+                </group><group>
+                    <field name="action_from_id"/>
+                    <field name="action_to_id"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+
+</odoo>
