@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _, tools
-from odoo.exceptions import ValidationError
+import uuid
 
-from dateutil.relativedelta import relativedelta
 import logging
 
 
@@ -79,3 +78,11 @@ class WorkflowJobManager(models.TransientModel):
         for inst in running_instances:
             if len(inst.workitem_ids.filtered(lambda x: x.state != 'done')) == 0:
                 inst.state = 'done'
+
+
+class Workflow(models.Model):
+    _name = 'work.task.runner'
+    _description = "Task Runners"
+
+    name = fields.Char('Task Runner UID', default=lambda x: uuid.uuid4().hex, readonly=True)
+    location = fields.Char('Runner Location', required=True)

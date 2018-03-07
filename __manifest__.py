@@ -40,6 +40,7 @@ Jobs will have a specific list of possible types: run_some_api, create_note, sen
         'security/ir.model.access.csv',
         'views/workflow_views.xml',
         'views/workitems_views.xml',
+        'views/management_views.xml',
         'data/workflow_job.xml'
     ],
     'qweb': [],

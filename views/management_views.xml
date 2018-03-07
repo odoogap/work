@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="task_runner_tree" model="ir.ui.view">
+        <field name="name">work.task.runner.tree</field>
+        <field name="model">work.task.runner</field>
+        <field name="arch" type="xml">
+            <tree string="Task Runner Host">
+                <field name="name"/>
+                <field name="location"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="task_runner_search" model="ir.ui.view">
+        <field name="name">work.task.runner.search</field>
+        <field name="model">work.task.runner</field>
+        <field name="arch" type="xml">
+            <search string="Task Runner Host">
+                <field name="name"/>
+                <field name="location"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="task_runner_form" model="ir.ui.view">
+        <field name="name">work.task.runner.form</field>
+        <field name="model">work.task.runner</field>
+        <field name="arch" type="xml">
+            <form string="Task Runner Host">
+                <group>
+                    <field name="name"/>
+                    <field name="location"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="task_runner_action" model="ir.actions.act_window">
+        <field name="name">Task Runner Host</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">work.task.runner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            <!-- Add Text Here -->
+          </p><p>
+            <!-- More details about what a user can do with this object will be OK -->
+          </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_task_runner"
+        name="Workflow Engine Hosts"
+        action="task_runner_action"
+        parent="base.menu_automation"
+        sequence="100"/>
+
+</odoo>
