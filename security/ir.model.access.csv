@@ -4,3 +4,7 @@ access_work_workflow_transition,access_work_workflow_transition,model_work_workf
 access_work_workflow_action,access_work_workflow_action,model_work_workflow_action,,1,1,1,1
 access_work_workflow,access_work_workflow,model_work_workflow,,1,1,1,1
 access_work_workflow_instance,access_work_workflow_instance,model_work_workflow_instance,,1,1,1,1
+access_work_workflow_job_draft,access_work_workflow_job_draft,model_work_workflow_job_draft,,1,0,0,0
+access_work_workflow_job_router,access_work_workflow_job_router,model_work_workflow_job_router,,1,0,0,0
+access_work_workflow_job_jenkins,access_work_workflow_job_jenkins,model_work_workflow_job_jenkins,,1,0,0,0
+access_work_task_runner,access_work_task_runner,model_work_task_runner,,1,0,0,0
