@@ -33,7 +33,7 @@ class WorkflowJobRouter(models.Model):
         item = super(WorkflowJobRouter, self).check_job(values)
 
         _logger.info('--- router job is done')
-        values.update({'state': 'done'})
+        item.update({'state': 'done'})
 
         return item
 

@@ -26,7 +26,7 @@ class WorkflowJobManager(models.TransientModel):
     # _auto = False
 
     @api.model
-    def manage_jobs(self, host, debug=False,):
+    def manage_jobs(self, host, debug=False):
         """ Workflow Job Manager will check workitems and will trigger transitions to create new workitems
 
         This method will not start any workflow, it will only maintain the existing workitem flow.
@@ -44,6 +44,25 @@ class WorkflowJobManager(models.TransientModel):
 
         """
 
+        # Trigger transactions - completed, not triggered
+        workitems_to_trigger = self.env['work.workflow.workitem'].search([
+            ('state', '=', 'done'),
+            ('triggered', '=', False),
+        ])
+
+        for wk in workitems_to_trigger:
+            wk.run_transitions(debug=debug)
+
+        # Close completed instances
+        running_instances = self.env['work.workflow.instance'].search([('state', 'not in', ['done', 'canceled'])])
+        for inst in running_instances:
+            if len(inst.workitem_ids.filtered(lambda x: x.state != 'done')) == 0:
+                inst.state = 'done'
+            print inst.workitem_ids.state
+            print len(inst.workitem_ids.filtered(lambda x: x.state != 'done'))
+
+    @api.model
+    def task_runner(self,host, debug=False):
         # This client might not be capable of doing all type of jobs
         # this is why we need a selector
         job_type_selector = 'work.workflow.job'
@@ -62,22 +81,6 @@ class WorkflowJobManager(models.TransientModel):
             # Else if job is run then just check it
             elif wk.state == 'running' and wk.run:
                 wk.check_job(debug=debug)
-
-        # Trigger transactions - completed, not triggered
-        workitems_to_trigger = self.env['work.workflow.workitem'].search([
-            ('state', '=', 'done'),
-            ('triggered', '=', False),
-        ])
-        for wk in workitems_to_trigger:
-            wk.run_transitions(debug=debug)
-
-        # Close completed instances
-        running_instances = self.env['work.workflow.instance'].search([
-            ('state', 'not in', ['done', 'canceled'])
-        ])
-        for inst in running_instances:
-            if len(inst.workitem_ids.filtered(lambda x: x.state != 'done')) == 0:
-                inst.state = 'done'
 
 
 class Workflow(models.Model):
